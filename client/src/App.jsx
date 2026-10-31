@@ -1,7 +1,7 @@
-import React from "react";
+import AppRoutes from "./routes/AppRoutes";
 
-const App = () => {
-  return <div>LoreTown</div>;
-};
+function App() {
+  return <AppRoutes />;
+}
 
 export default App;
