@@ -49,7 +49,7 @@ export function SideNav({ user = {}, onLogout }) {
             render={
               <SidebarMenuButton
                 size="lg"
-                className="data-[popup-open]:bg-sidebar-accent data-[popup-open]:text-sidebar-accent-foreground md:h-8 md:p-0"
+                className="data-[popup-open]:bg-sidebar-accent data-[popup-open]:text-sidebar-accent-foreground md:h-8 md:p-0 cursor-pointer"
               />
             }
           >
@@ -94,7 +94,7 @@ export function SideNav({ user = {}, onLogout }) {
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <Sparkles />
                 Upgrade to Pro
               </DropdownMenuItem>
@@ -103,17 +103,17 @@ export function SideNav({ user = {}, onLogout }) {
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
 
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <CreditCard />
                 Billing
               </DropdownMenuItem>
 
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <Bell />
                 Notifications
               </DropdownMenuItem>
@@ -123,7 +123,7 @@ export function SideNav({ user = {}, onLogout }) {
 
             <DropdownMenuItem
               onClick={onLogout}
-              className="text-red-500 focus:text-red-500"
+              className="cursor-pointer text-red-500 focus:text-red-500"
             >
               <LogOut />
               Log out
