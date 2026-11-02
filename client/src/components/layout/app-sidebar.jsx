@@ -20,6 +20,7 @@ import {
 
 import { SideNav } from "./SideNav";
 import gods from "@/data/gods";
+import creatures from "@/data/creatures";
 
 import logo from "/logo.svg";
 
@@ -37,6 +38,15 @@ const data = {
     { title: "Creatures", url: "/creatures", icon: Bird },
     { title: "Heroes", url: "/heroes", icon: Sword },
   ],
+};
+
+// Map each top-level section to its data source + the URL prefix
+// used when generating detail links.
+const sections = {
+  "/": { items: gods, basePath: "/gods" },
+  "/gods": { items: gods, basePath: "/gods" },
+  "/creatures": { items: creatures, basePath: "/creatures" },
+  // "/demons" and "/heroes" intentionally have no data yet.
 };
 
 export function AppSidebar({ ...props }) {
@@ -61,23 +71,25 @@ export function AppSidebar({ ...props }) {
     );
   }, [location.pathname]);
 
-  // Archive visibility
-  const showGods = activeItem.url === "/" || activeItem.url === "/gods";
+  // Resolve the current section's data + base path.
+  // Falls back to an empty list for sections without data yet
+  // (Demons / Heroes).
+  const section = sections[activeItem.url] ?? { items: [], basePath: "" };
+  const showArchive = section.items.length > 0 || activeItem.url === "/gods";
 
   const filteredItems = React.useMemo(() => {
-    if (!showGods) return [];
+    if (section.items.length === 0) return [];
 
     const query = search.toLowerCase().trim();
+    if (!query) return section.items;
 
-    if (!query) return gods;
-
-    return gods.filter(
-      (god) =>
-        god.name.toLowerCase().includes(query) ||
-        god.mythology.toLowerCase().includes(query) ||
-        god.title.toLowerCase().includes(query),
+    return section.items.filter(
+      (item) =>
+        item.name.toLowerCase().includes(query) ||
+        item.mythology.toLowerCase().includes(query) ||
+        item.title.toLowerCase().includes(query),
     );
-  }, [showGods, search]);
+  }, [section.items, search]);
 
   return (
     <Sidebar
@@ -166,24 +178,26 @@ export function AppSidebar({ ...props }) {
             </span>
           </div>
 
-          {/* Search */}
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-white/30" />
+          {/* Search — only rendered when the section actually has data */}
+          {showArchive && (
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-white/30" />
 
-            <SidebarInput
-              placeholder="Search by name, mythology..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-8"
-            />
-          </div>
+              <SidebarInput
+                placeholder="Search by name, mythology..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+          )}
         </SidebarHeader>
 
         {/* Archive Content */}
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {!showGods ? (
+              {!showArchive ? (
                 <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
                   <span className="text-3xl text-amber-400/30">✧</span>
 
@@ -200,28 +214,28 @@ export function AppSidebar({ ...props }) {
                   </p>
                 </div>
               ) : (
-                filteredItems.map((god) => (
+                filteredItems.map((entry) => (
                   <Link
-                    to={`/gods/${god.slug}`}
-                    key={god.id}
+                    to={`${section.basePath}/${entry.slug}`}
+                    key={entry.id}
                     className="group flex cursor-pointer flex-col items-start gap-2 border-b border-white/[0.06] p-4 text-sm leading-tight transition-colors last:border-b-0 hover:bg-amber-500/[0.04]"
                   >
                     <div className="flex w-full items-center gap-2">
                       <span className="font-semibold text-white/90 transition-colors group-hover:text-amber-400">
-                        {god.name}
+                        {entry.name}
                       </span>
 
                       <span className="ml-auto shrink-0 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/40">
-                        {god.mythology}
+                        {entry.mythology}
                       </span>
                     </div>
 
                     <span className="text-xs font-medium text-amber-400/80">
-                      {god.title}
+                      {entry.title}
                     </span>
 
                     <span className="line-clamp-2 text-xs text-white/40">
-                      {god.introduction}
+                      {entry.introduction}
                     </span>
                   </Link>
                 ))
